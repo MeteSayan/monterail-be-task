@@ -9,6 +9,12 @@ export class Event {
   status: boolean;
 
   @Column()
+  description: string;
+
+  @Column()
+  createdBy: string;
+
+  @Column()
   row: number;
 
   @Column()

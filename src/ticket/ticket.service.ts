@@ -17,7 +17,7 @@ export class TicketService {
     private orderRepository: Repository<Order>,
   ) {}
 
-  async getTickets(user: string, role: string) {
+  async getTickets() {
     try {
       return await this.ticketRepository.find();
     } catch (err) {
@@ -26,7 +26,7 @@ export class TicketService {
     }
   }
 
-  async getReservedTickets(user: string, role: string) {
+  async getReservedTickets(role: string) {
     let reserverdTickets = {
       seats: [],
       quantity: 0,
@@ -70,11 +70,7 @@ export class TicketService {
     }
   }
 
-  async getReservedTicketsByEventId(
-    user: string,
-    role: string,
-    eventId: number,
-  ) {
+  async getReservedTicketsByEventId(role: string, eventId: number) {
     try {
       let reserverdTickets = {
         seats: [],
@@ -132,11 +128,7 @@ export class TicketService {
     }
   }
 
-  async updateTicket(
-    user: string,
-    role: string,
-    ticketPayload: updateTicketDto,
-  ) {
+  async updateTicket(user: string, ticketPayload: updateTicketDto) {
     try {
       let ticketIds = [];
 

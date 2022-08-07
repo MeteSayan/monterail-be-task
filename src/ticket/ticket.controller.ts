@@ -14,24 +14,26 @@ export class TicketController {
 
   @ApiTags('Ticket')
   @Get('/tickets')
-  async getTickets(@User() user: string, @Role() role: string) {
-    return await this.ticketService.getTickets(user, role);
+  async getTickets() {
+    //! Get all tickets
+    return await this.ticketService.getTickets();
   }
 
   @ApiTags('Ticket')
   @Get('/reserved-tickets')
-  async getReservedTickets(@User() user: string, @Role() role: string) {
-    return await this.ticketService.getReservedTickets(user, role);
+  async getReservedTickets(@Role() role: string) {
+    //! Get all reserved tickets
+    return await this.ticketService.getReservedTickets(role);
   }
 
   @ApiTags('Ticket')
   @Get('/reserved-tickets/:id')
   async getReservedTicketsByEventId(
-    @User() user: string,
     @Role() role: string,
     @Param('id') id: number,
   ) {
-    return await this.ticketService.getReservedTicketsByEventId(user, role, id);
+    //! Get reserved ticket with event id
+    return await this.ticketService.getReservedTicketsByEventId(role, id);
   }
 
   @ApiTags('Ticket')
@@ -41,16 +43,14 @@ export class TicketController {
     @Role() role: string,
     @Param('id') id: number,
   ) {
+    //! Get ticket with id
     return await this.ticketService.getTicket(user, role, id);
   }
 
   @ApiTags('Ticket')
   @Put('/tickets/')
-  async updateTicket(
-    @User() user: string,
-    @Role() role: string,
-    @Body() ticket: updateTicketDto,
-  ) {
-    return await this.ticketService.updateTicket(user, role, ticket);
+  async updateTicket(@User() user: string, @Body() ticket: updateTicketDto) {
+    //! Update tickets
+    return await this.ticketService.updateTicket(user, ticket);
   }
 }

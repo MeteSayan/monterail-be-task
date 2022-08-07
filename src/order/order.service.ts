@@ -14,7 +14,11 @@ export class OrderService {
 
   async getOrders(user: string, role: string) {
     try {
-      return await this.orderRepository.find();
+      if (role == 'admin') {
+        return await this.orderRepository.find();
+      } else {
+        return await this.orderRepository.findBy({ username: user });
+      }
     } catch (err) {
       console.log(err);
       throw err;
@@ -51,10 +55,9 @@ export class OrderService {
     }
   }
 
+  //! Checking status of payments. Deletes reservations if payment is not made within 15 minutes.
   @Cron('1 * * * * *')
   async deleteOrder() {
-    console.log('test');
-
     try {
       let ticketIdsForQuery = '';
       let orderIdsForQuery = '';
@@ -65,7 +68,6 @@ WHERE created_at < NOW() - INTERVAL '15 minutes'
   AND status = 'waiting';
       `;
       const order = await this.orderRepository.query(sql);
-      console.log(order);
 
       if (order.length < 1) {
         return null;

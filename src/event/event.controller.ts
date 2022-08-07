@@ -24,18 +24,16 @@ export class EventController {
 
   @ApiTags('Event')
   @Get('/')
-  async getEvents(@User() user: string, @Role() role: string) {
-    return await this.eventService.getEvents(user, role);
+  async getEvents() {
+    //! Get all events
+    return await this.eventService.getEvents();
   }
 
   @ApiTags('Event')
   @Get('/:id')
-  async getEvent(
-    @User() user: string,
-    @Role() role: string,
-    @Param('id') id: number,
-  ) {
-    return await this.eventService.getEvent(user, role, id);
+  async getEvent(@Param('id') id: number) {
+    //! Get event by id
+    return await this.eventService.getEvent(id);
   }
 
   @ApiTags('Event')
@@ -45,26 +43,21 @@ export class EventController {
     @Role() role: string,
     @Body() event: createEventDto,
   ) {
+    //! Create event
     return await this.eventService.createEvent(user, role, event);
   }
 
   @ApiTags('Event')
-  @Put('/:id')
-  async updateEvent(
-    @User() user: string,
-    @Role() role: string,
-    @Body() event: Event,
-  ) {
-    return await this.eventService.updateEvent(user, role, event);
+  @Put('/')
+  async updateEvent(@Role() role: string, @Body() event: Event) {
+    //! Update event
+    return await this.eventService.updateEvent(role, event);
   }
 
   @ApiTags('Event')
   @Delete('/')
-  async deleteEvent(
-    @User() user: string,
-    @Role() role: string,
-    @Body() event: Event,
-  ) {
-    return await this.eventService.deleteEvent(user, role, event);
+  async deleteEvent(@Role() role: string, @Body() event: Event) {
+    //! Delete event
+    return await this.eventService.deleteEvent(role, event);
   }
 }

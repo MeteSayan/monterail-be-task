@@ -1,18 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { User } from 'src/auth/user.decorator';
 import { Role } from 'src/auth/role.decorator';
-import { Order } from './entity/order.entity';
+import { updateOrderDto } from './dto/updateOrder.dto';
 
 @Controller('order')
 @ApiBearerAuth()
@@ -23,6 +15,7 @@ export class OrderController {
   @ApiTags('Order')
   @Get('/')
   async getOrders(@User() user: string, @Role() role: string) {
+    //! Get all orders
     return await this.orderService.getOrders(user, role);
   }
 
@@ -33,16 +26,18 @@ export class OrderController {
     @Role() role: string,
     @Param('id') id: number,
   ) {
+    //! Get order with id
     return await this.orderService.getOrder(user, role, id);
   }
 
   @ApiTags('Order')
-  @Put('/:id')
+  @Put('/')
   async updateOrder(
     @User() user: string,
     @Role() role: string,
-    @Body() order: Order,
+    @Body() order: updateOrderDto,
   ) {
+    //! Update order
     return await this.orderService.updateOrder(user, role, order);
   }
 }

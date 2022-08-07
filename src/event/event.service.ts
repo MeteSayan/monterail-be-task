@@ -14,7 +14,7 @@ export class EventService {
     private ticketRepository: Repository<Ticket>,
   ) {}
 
-  async getEvents(user: string, role: string) {
+  async getEvents() {
     try {
       return await this.eventRepository.find();
     } catch (err) {
@@ -23,7 +23,7 @@ export class EventService {
     }
   }
 
-  async getEvent(user: string, role: string, id: number) {
+  async getEvent(id: number) {
     try {
       return await this.eventRepository.findOneBy({ id: id });
     } catch (err) {
@@ -46,7 +46,6 @@ export class EventService {
         }
 
         const createdEvent = await this.eventRepository.save(event);
-        console.log(createdEvent.id);
 
         event.seats.forEach((x) => {
           for (let y = 0; y < x.row; y++) {
@@ -72,7 +71,7 @@ export class EventService {
     }
   }
 
-  async updateEvent(user: string, role: string, eventPayload: Event) {
+  async updateEvent(role: string, eventPayload: Event) {
     try {
       if (role == 'admin') {
         const event = await this.eventRepository.findOneBy({
@@ -89,9 +88,9 @@ export class EventService {
     }
   }
 
-  async deleteEvent(user: string, role: string, eventPayload: Event) {
+  async deleteEvent(role: string, eventPayload: Event) {
     try {
-      //! will be delete tickets too (must be updated)
+      //TODO will be delete tickets too
       if (role == 'admin') {
         const event = await this.eventRepository.findOneBy({
           id: eventPayload.id,

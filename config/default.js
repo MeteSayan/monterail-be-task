@@ -24,6 +24,7 @@ module.exports = {
   dbConfig: {
     dbHost: '127.0.0.1',
     dbName: '',
+    dbPort: 5432,
     dbUser: 'ticketworld',
     dbPass: 'ticketworld1234',
   },

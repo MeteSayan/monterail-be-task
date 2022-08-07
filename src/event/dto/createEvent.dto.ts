@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class createEventDto {
-  id: string;
+  id: number;
 
   status: boolean;
+
+  @ApiProperty()
+  title: string;
 
   @ApiProperty()
   description: string;
@@ -11,10 +14,12 @@ export class createEventDto {
   createdBy: string;
 
   @ApiProperty()
-  row: number;
-
-  @ApiProperty()
-  column: number;
+  seats: Array<{
+    row: number;
+    col: number;
+    sellingOption: string;
+    price: number;
+  }>;
 
   @ApiProperty()
   type: string;

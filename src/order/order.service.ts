@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entity/order.entity';
-import { orderDto } from './dto/order.dto';
 import { createOrderDto } from './dto/createOrder.dto';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class OrderService {
     }
   }
 
-  async getOrder(user: string, role: string, id: string) {
+  async getOrder(user: string, role: string, id: number) {
     try {
       if (role == 'admin') {
         return await this.orderRepository.findOneBy({ id: id });
@@ -44,7 +43,7 @@ export class OrderService {
     }
   }
 
-  async updateOrder(user: string, role: string, orderPayload: orderDto) {
+  async updateOrder(user: string, role: string, orderPayload: Order) {
     try {
       const ticket = await this.orderRepository.findOneBy({
         id: orderPayload.id,

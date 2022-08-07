@@ -1,18 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class orderDto {
-  @ApiProperty()
+export class updateTicketDto {
   id: string;
 
   @ApiProperty()
   eventId: string;
 
   @ApiProperty()
-  ticketId: string;
+  seats: Array<{
+    row: number;
+    col: number;
+  }>;
 
   @ApiProperty()
-  status: string;
-
-  @ApiProperty()
-  username: string;
+  sellingOption: string;
 }

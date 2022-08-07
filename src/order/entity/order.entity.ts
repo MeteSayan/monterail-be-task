@@ -1,19 +1,29 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Order {
-  @PrimaryColumn()
-  id: string;
+  @ApiProperty()
+  @PrimaryGeneratedColumn()
+  id: number;
 
+  @ApiProperty()
   @Column()
-  eventId: string;
+  eventId: number;
 
+  @ApiProperty()
   @Column()
-  ticketId: string;
+  ticketId: number;
 
+  @ApiProperty()
   @Column()
   status: string;
 
+  @ApiProperty()
+  @Column()
+  price: number;
+
+  @ApiProperty()
   @Column()
   username: string;
 }

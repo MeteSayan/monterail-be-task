@@ -10,10 +10,10 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { OrderService } from './order.service';
-import { orderDto } from './dto/order.dto';
 import { createOrderDto } from './dto/createOrder.dto';
 import { User } from 'src/auth/user.decorator';
 import { Role } from 'src/auth/role.decorator';
+import { Order } from './entity/order.entity';
 
 @Controller('order')
 @ApiBearerAuth()
@@ -32,7 +32,7 @@ export class OrderController {
   async getOrder(
     @User() user: string,
     @Role() role: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
   ) {
     return await this.orderService.getOrder(user, role, id);
   }
@@ -49,10 +49,10 @@ export class OrderController {
 
   @ApiTags('Order')
   @Put('/:id')
-  async updateTicket(
+  async updateOrder(
     @User() user: string,
     @Role() role: string,
-    @Body() order: orderDto,
+    @Body() order: Order,
   ) {
     return await this.orderService.updateOrder(user, role, order);
   }

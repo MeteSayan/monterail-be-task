@@ -1,25 +1,43 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Event {
-  @PrimaryColumn()
-  id: string;
+  @ApiProperty()
+  @PrimaryGeneratedColumn()
+  id: number;
 
+  @ApiProperty()
   @Column({ default: true })
   status: boolean;
 
+  @ApiProperty()
+  @Column()
+  title: string;
+
+  @ApiProperty()
   @Column()
   description: string;
 
+  @ApiProperty()
   @Column()
   createdBy: string;
 
-  @Column()
-  row: number;
+  @ApiProperty({ required: true, type: Array })
+  @Column({
+    nullable: false,
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+  })
+  seats: Array<{
+    row: number;
+    col: number;
+    sellingOption: string;
+    price: number;
+  }>;
 
-  @Column()
-  column: number;
-
+  @ApiProperty()
   @Column()
   type: string;
 }

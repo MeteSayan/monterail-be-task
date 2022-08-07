@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entity/event.entity';
 import { Ticket } from 'src/ticket/entity/ticket.entity';
 import { createEventDto } from './dto/createEvent.dto';
-import { eventDto } from './dto/event.dto';
 
 @Injectable()
 export class EventService {
@@ -24,7 +23,7 @@ export class EventService {
     }
   }
 
-  async getEvent(user: string, role: string, id: string) {
+  async getEvent(user: string, role: string, id: number) {
     try {
       return await this.eventRepository.findOneBy({ id: id });
     } catch (err) {
@@ -37,7 +36,35 @@ export class EventService {
     try {
       event.createdBy = user;
       if (role == 'admin') {
-        return await this.eventRepository.save(event);
+        for (let x = 0; x < event.seats.length; x++) {
+          if (
+            event.seats[x].sellingOption == 'even' &&
+            event.seats[x].col % 2 != 0
+          ) {
+            return 'The number of col is not an even number';
+          }
+        }
+
+        const createdEvent = await this.eventRepository.save(event);
+        console.log(createdEvent.id);
+
+        event.seats.forEach((x) => {
+          for (let y = 0; y < x.row; y++) {
+            for (let z = 0; z < x.col; z++) {
+              let ticket = {
+                eventId: createdEvent.id,
+                row: y,
+                column: z,
+                sellingOption: x.sellingOption,
+                price: x.price,
+              };
+
+              this.ticketRepository.save(ticket);
+            }
+          }
+        });
+
+        return true;
       }
     } catch (err) {
       console.log(err);
@@ -45,7 +72,7 @@ export class EventService {
     }
   }
 
-  async updateEvent(user: string, role: string, eventPayload: eventDto) {
+  async updateEvent(user: string, role: string, eventPayload: Event) {
     try {
       if (role == 'admin') {
         const event = await this.eventRepository.findOneBy({
@@ -62,8 +89,9 @@ export class EventService {
     }
   }
 
-  async deleteEvent(user: string, role: string, eventPayload: eventDto) {
+  async deleteEvent(user: string, role: string, eventPayload: Event) {
     try {
+      //! will be delete tickets too (must be updated)
       if (role == 'admin') {
         const event = await this.eventRepository.findOneBy({
           id: eventPayload.id,

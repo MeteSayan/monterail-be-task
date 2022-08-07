@@ -9,10 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EventService } from './event.service';
 import { createEventDto } from './dto/createEvent.dto';
-import { eventDto } from './dto/event.dto';
+import { Event } from './entity/event.entity';
 import { Role } from 'src/auth/role.decorator';
 import { User } from 'src/auth/user.decorator';
 
@@ -33,7 +33,7 @@ export class EventController {
   async getEvent(
     @User() user: string,
     @Role() role: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
   ) {
     return await this.eventService.getEvent(user, role, id);
   }
@@ -53,7 +53,7 @@ export class EventController {
   async updateEvent(
     @User() user: string,
     @Role() role: string,
-    @Body() event: eventDto,
+    @Body() event: Event,
   ) {
     return await this.eventService.updateEvent(user, role, event);
   }
@@ -63,7 +63,7 @@ export class EventController {
   async deleteEvent(
     @User() user: string,
     @Role() role: string,
-    @Body() event: eventDto,
+    @Body() event: Event,
   ) {
     return await this.eventService.deleteEvent(user, role, event);
   }

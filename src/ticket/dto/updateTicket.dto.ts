@@ -4,7 +4,7 @@ export class updateTicketDto {
   id: string;
 
   @ApiProperty()
-  eventId: string;
+  eventId: number;
 
   @ApiProperty()
   seats: Array<{

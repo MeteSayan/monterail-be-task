@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Ticket } from './entity/ticket.entity';
 import { updateTicketDto } from './dto/updateTicket.dto';
 import { Event } from 'src/event/entity/event.entity';
+import { Order } from 'src/order/entity/order.entity';
 
 @Injectable()
 export class TicketService {
@@ -12,6 +13,8 @@ export class TicketService {
     private ticketRepository: Repository<Ticket>,
     @InjectRepository(Event)
     private eventRepository: Repository<Event>,
+    @InjectRepository(Order)
+    private orderRepository: Repository<Order>,
   ) {}
 
   async getTickets(user: string, role: string) {
@@ -135,6 +138,8 @@ export class TicketService {
     ticketPayload: updateTicketDto,
   ) {
     try {
+      let ticketIds = [];
+
       //! i will think like user only use one sellingOption
       let availableTicketCondition = [];
       ticketPayload.seats.forEach((x) => {
@@ -159,22 +164,33 @@ export class TicketService {
         return 'Selected seats are not available.';
       }
 
+      const totalCost = availableTickets.reduce((accumulator, object) => {
+        return accumulator + object.price;
+      }, 0);
+
       //! Tickets will come as a nested array
       if (ticketPayload.sellingOption == 'even') {
         //! we can only buy tickets in quantity that is even
         if (ticketPayload.seats.length % 2 == 0) {
-          ticketPayload.seats.forEach((x) => {
-            this.ticketRepository.update(
-              {
-                row: x.row,
-                column: x.col,
-                sellingOption: 'even',
-              },
-              {
-                status: true,
-                username: user,
-              },
-            );
+          for (let x = 0; x < ticketPayload.seats.length; x++) {
+            const data = await this.ticketRepository.findOneBy({
+              row: ticketPayload.seats[x].row,
+              column: ticketPayload.seats[x].col,
+              sellingOption: 'even',
+            });
+
+            data.status = true;
+            data.username = user;
+            this.ticketRepository.save(data);
+            ticketIds.push(data.id);
+          }
+
+          this.orderRepository.save({
+            eventId: ticketPayload.eventId,
+            ticketIds: ticketIds,
+            status: 'waiting',
+            price: totalCost,
+            username: user,
           });
           return 'Seats reserved.';
         } else {
@@ -194,54 +210,68 @@ export class TicketService {
         for (let x = 0; x < sortedSeats.length; x++) {
           if (x != sortedSeats.length - 1) {
             if (
-              sortedSeats[x].col != sortedSeats[x + 1].col - 1 &&
-              sortedSeats[x].col != sortedSeats[x + 1].col + 1 &&
-              sortedSeats[x].col != sortedSeats[x + 1].col
-            ) {
-              allTogetherStatus = false;
-            }
-            if (
-              sortedSeats[x].row != sortedSeats[x + 1].row - 1 &&
-              sortedSeats[x].row != sortedSeats[x + 1].row + 1 &&
-              sortedSeats[x].row != sortedSeats[x + 1].row
+              (sortedSeats[x].col != sortedSeats[x + 1].col - 1 &&
+                sortedSeats[x].col != sortedSeats[x + 1].col + 1 &&
+                sortedSeats[x].col != sortedSeats[x + 1].col) ||
+              (sortedSeats[x].row != sortedSeats[x + 1].row - 1 &&
+                sortedSeats[x].row != sortedSeats[x + 1].row + 1 &&
+                sortedSeats[x].row != sortedSeats[x + 1].row)
             ) {
               allTogetherStatus = false;
             }
           }
         }
 
-        ticketPayload.seats.forEach((x) => {
-          if (allTogetherStatus == false) {
-            this.ticketRepository.update(
-              {
-                row: x.row,
-                column: x.col,
-                sellingOption: 'all together',
-              },
-              {
-                status: true,
-                username: user,
-              },
-            );
+        if (allTogetherStatus == true) {
+          for (let x = 0; x < ticketPayload.seats.length; x++) {
+            const data = await this.ticketRepository.findOneBy({
+              row: ticketPayload.seats[x].row,
+              column: ticketPayload.seats[x].col,
+              sellingOption: 'all together',
+            });
+
+            data.status = true;
+            data.username = user;
+            this.ticketRepository.save(data);
+            ticketIds.push(data.id);
           }
-        });
-        return 'Seats reserved.';
+
+          this.orderRepository.save({
+            eventId: ticketPayload.eventId,
+            ticketIds: ticketIds,
+            status: 'waiting',
+            price: totalCost,
+            username: user,
+          });
+
+          return 'Seats reserved.';
+        } else {
+          return 'You should take a another seat around the another seat.';
+        }
       } else if (ticketPayload.sellingOption == 'avoid one') {
         //! we can only buy tickets in a quantity that will not leave only 1 ticket
         if (availableTickets.length - ticketPayload.seats.length != 1) {
-          ticketPayload.seats.forEach((x) => {
-            this.ticketRepository.update(
-              {
-                row: x.row,
-                column: x.col,
-                sellingOption: 'avoid one',
-              },
-              {
-                status: true,
-                username: user,
-              },
-            );
+          for (let x = 0; x < ticketPayload.seats.length; x++) {
+            const data = await this.ticketRepository.findOneBy({
+              row: ticketPayload.seats[x].row,
+              column: ticketPayload.seats[x].col,
+              sellingOption: 'avoid one',
+            });
+
+            data.status = true;
+            data.username = user;
+            this.ticketRepository.save(data);
+            ticketIds.push(data.id);
+          }
+
+          this.orderRepository.save({
+            eventId: ticketPayload.eventId,
+            ticketIds: ticketIds,
+            status: 'waiting',
+            price: totalCost,
+            username: user,
           });
+
           return 'Seats reserved.';
         } else {
           return null;

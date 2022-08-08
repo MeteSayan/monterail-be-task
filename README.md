@@ -6,7 +6,7 @@ Monterail Back End Task. The purpose of this task is to create a reservation sys
 - The configuration file should be checked before deployment (config/default.js).
 - Tested node versions v14.17.0 & v16.16.0
 - Nestjs must be installed (npm i -g @nestjs/cli). 
-- Postgresql must be installed. Database settings can be changed in configuration file.
+- PostgreSQL must be installed. Database settings can be changed in configuration file.
 
 ```bash
 $ yarn
